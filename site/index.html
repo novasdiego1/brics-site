@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Radar Desdolarización — BTC, Oro y BRICS</title>
+<style>
+  :root {
+    --surface-1: #fcfcfb;
+    --surface-2: #ffffff;
+    --text-primary: #0b0b0b;
+    --text-secondary: #52514e;
+    --border: #e4e3de;
+    --accent: #2a78d6;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--surface-1);
+    color: var(--text-primary);
+    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.5;
+  }
+  header {
+    padding: 32px 20px 16px;
+    max-width: 860px;
+    margin: 0 auto;
+  }
+  header h1 { font-size: 1.6rem; margin: 0 0 6px; }
+  header p { color: var(--text-secondary); margin: 0; font-size: 0.95rem; }
+  main { max-width: 860px; margin: 0 auto; padding: 0 20px 60px; }
+  section { margin-top: 36px; }
+  section h2 { font-size: 1.1rem; margin-bottom: 4px; }
+  section .note { color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 12px; }
+  .card {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+  }
+  img { display: block; width: 100%; height: auto; border-radius: 6px; }
+  .timeline { list-style: none; padding: 0; margin: 0; }
+  .timeline li {
+    border-left: 2px solid var(--border);
+    padding: 4px 0 16px 16px;
+    position: relative;
+    font-size: 0.92rem;
+  }
+  .timeline li::before {
+    content: "";
+    position: absolute; left: -5px; top: 6px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent);
+  }
+  .timeline .date { color: var(--text-secondary); font-size: 0.8rem; display: block; }
+  footer {
+    max-width: 860px; margin: 40px auto 0; padding: 16px 20px;
+    color: var(--text-secondary); font-size: 0.8rem; border-top: 1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Radar Desdolarización</h1>
+  <p>BTC, oro, dólar y BRICS — datos y contexto, sin hype. Actualizado automáticamente.</p>
+</header>
+<main>
+  <section>
+    <h2>BTC vs Oro vs DXY</h2>
+    <div class="note">Indexado a 100 al inicio del período — así se comparan series de escalas distintas en un solo eje.</div>
+    <div class="card"><img src="img/chart_indexed.png" alt="BTC vs Oro vs DXY indexado"></div>
+  </section>
+
+  <section>
+    <h2>Correlación BTC – Oro (30 días)</h2>
+    <div class="note">Azul = se mueven juntos. Naranja = se mueven en direcciones opuestas.</div>
+    <div class="card"><img src="img/chart_correlation.png" alt="Correlación móvil BTC-Oro"></div>
+  </section>
+
+  <section>
+    <h2>Línea de tiempo — eventos verificados</h2>
+    <div class="note">Solo hechos confirmados con fuente primaria, sin especulación.</div>
+    <ul class="timeline">
+      <li><span class="date">12 sep 2026</span>18ª Cumbre BRICS (Nueva Delhi): lanzamiento operativo de BRICS Pay, conectando CIPS/UPI/Pix/SPFS. Trump amenaza con aranceles del 100% a países que avancen en alternativas al dólar.</li>
+      <li><span class="date">— pendiente</span>Próximos eventos se agregan aquí a medida que se verifican.</li>
+    </ul>
+  </section>
+</main>
+<footer>
+  Datos: Yahoo Finance (BTC-USD, GC=F, DX-Y.NYB). Contenido editorial, no es asesoría financiera.
+</footer>
+</body>
+</html>
