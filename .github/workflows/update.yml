@@ -1,0 +1,48 @@
+name: Actualizar y publicar Radar Desdolarización
+
+on:
+  schedule:
+    - cron: "0 12 * * *"   # 06:00 America/Tegucigalpa (UTC-6) todos los días
+  workflow_dispatch: {}     # permite correrlo manualmente desde la pestaña Actions
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar dependencias
+        run: pip install yfinance pandas matplotlib
+
+      - name: Descargar datos de mercado
+        run: python3 scripts/fetch_data.py --days 730 --out data/market_data.csv
+
+      - name: Generar gráficos
+        run: python3 scripts/build_charts.py --csv data/market_data.csv --outdir site/img
+
+      - name: Preparar artifact de Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - name: Deploy a GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
