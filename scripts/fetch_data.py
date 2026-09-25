@@ -26,6 +26,14 @@ TICKERS = {
     "BTC-USD": "btc_usd",
     "GC=F": "gold_usd",
     "DX-Y.NYB": "dxy",
+    # Monedas BRICS vs USD (Yahoo Finance: <MONEDA>=X es USD -> moneda,
+    # o sea "cuántas unidades de esa moneda vale 1 dólar")
+    "BRL=X": "usd_brl",
+    "INR=X": "usd_inr",
+    "CNY=X": "usd_cny",
+    "ZAR=X": "usd_zar",
+    # Rusia (RUB=X) se omite a propósito: el dato en Yahoo Finance es poco
+    # confiable desde las sanciones de 2022 (feed intermitente/desactualizado).
 }
 
 
@@ -36,13 +44,17 @@ def fetch(days: int) -> pd.DataFrame:
     frames = []
     for ticker, colname in TICKERS.items():
         print(f"Descargando {ticker} ({colname})...", file=sys.stderr)
-        hist = yf.download(
-            ticker,
-            start=start.strftime("%Y-%m-%d"),
-            end=end.strftime("%Y-%m-%d"),
-            progress=False,
-            auto_adjust=True,
-        )
+        try:
+            hist = yf.download(
+                ticker,
+                start=start.strftime("%Y-%m-%d"),
+                end=end.strftime("%Y-%m-%d"),
+                progress=False,
+                auto_adjust=True,
+            )
+        except Exception as e:
+            print(f"  AVISO: error descargando {ticker}: {e}", file=sys.stderr)
+            continue
         if hist.empty:
             print(f"  AVISO: sin datos para {ticker}", file=sys.stderr)
             continue

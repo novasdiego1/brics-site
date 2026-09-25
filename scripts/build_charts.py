@@ -23,10 +23,12 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import pandas as pd
 
-# Paleta validada (light mode) — slots 1, 2, 3 del skill dataviz (all-pairs safe)
+# Paleta validada (light mode) — slots 1-4 del skill dataviz (adjacent-pairs
+# safe, correcto para líneas de series de tiempo)
 BLUE = "#2a78d6"
 ORANGE = "#eb6834"
 AQUA = "#1baf7a"
+YELLOW = "#eda100"
 TEXT_PRIMARY = "#0b0b0b"
 TEXT_SECONDARY = "#52514e"
 SURFACE = "#fcfcfb"
@@ -86,6 +88,43 @@ def chart_correlation(df: pd.DataFrame, outpath: str, window: int = 30):
     plt.close(fig)
 
 
+def chart_currencies(df: pd.DataFrame, outpath: str):
+    """
+    Monedas BRICS vs USD, indexado a 100. Los tickers de Yahoo Finance dan
+    "cuántas unidades de la moneda vale 1 USD" — para que "sube = la moneda
+    se fortalece frente al dólar" (la lectura intuitiva para esta tesis),
+    invertimos la serie antes de indexar.
+    """
+    cols = {
+        "usd_brl": ("Real brasileño", BLUE),
+        "usd_inr": ("Rupia india", ORANGE),
+        "usd_cny": ("Yuan chino", AQUA),
+        "usd_zar": ("Rand sudafricano", YELLOW),
+    }
+    available = [c for c in cols if c in df.columns]
+    if not available:
+        print("AVISO: no hay columnas de monedas BRICS en el CSV, se omite el gráfico.")
+        return
+
+    fig, ax = plt.subplots(figsize=(10, 5), dpi=150)
+    for col in available:
+        inverted = 1 / df[col]
+        idx = inverted.divide(inverted.iloc[0]).multiply(100)
+        label, color = cols[col]
+        ax.plot(idx.index, idx, color=color, linewidth=2, label=label, solid_capstyle="round")
+    ax.axhline(100, color=GRID, linewidth=1, linestyle="--", zorder=0)
+
+    style_axes(ax)
+    ax.set_title("Monedas BRICS vs USD — indexado a 100 (sube = moneda se fortalece frente al dólar)",
+                 fontsize=12, color=TEXT_PRIMARY, loc="left", pad=14)
+    ax.set_ylabel("Índice (base 100)", fontsize=10, color=TEXT_SECONDARY)
+    ax.legend(loc="upper left", frameon=False, fontsize=9, labelcolor=TEXT_PRIMARY)
+
+    fig.tight_layout()
+    fig.savefig(outpath, facecolor=SURFACE)
+    plt.close(fig)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--csv", type=str, default="../data/market_data.csv")
@@ -97,6 +136,7 @@ def main():
 
     chart_indexed(df, os.path.join(args.outdir, "chart_indexed.png"))
     chart_correlation(df, os.path.join(args.outdir, "chart_correlation.png"))
+    chart_currencies(df, os.path.join(args.outdir, "chart_currencies.png"))
 
     latest_corr = df["btc_usd"].pct_change().rolling(30).corr(df["gold_usd"].pct_change()).iloc[-1]
     print(f"Listo. Correlación BTC-Oro (30d) más reciente: {latest_corr:.2f}")

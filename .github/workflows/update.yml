@@ -38,6 +38,9 @@ jobs:
       - name: Generar gráficos
         run: python3 scripts/build_charts.py --csv data/market_data.csv --outdir site/img
 
+      - name: Descargar noticias BRICS (automático, sin verificar)
+        run: python3 scripts/fetch_news.py --query "BRICS" --lang es-419 --out site/data/news.json --limit 10
+
       - name: Preparar artifact de Pages
         uses: actions/upload-pages-artifact@v3
         with:

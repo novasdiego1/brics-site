@@ -53,6 +53,22 @@
     background: var(--accent);
   }
   .timeline .date { color: var(--text-secondary); font-size: 0.8rem; display: block; }
+  .news-list { list-style: none; padding: 0; margin: 0; }
+  .news-list li {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.92rem;
+  }
+  .news-list li:last-child { border-bottom: none; }
+  .news-list a { color: var(--text-primary); text-decoration: none; font-weight: 500; }
+  .news-list a:hover { text-decoration: underline; }
+  .news-list .meta { color: var(--text-secondary); font-size: 0.78rem; display: block; margin-top: 2px; }
+  .news-empty { color: var(--text-secondary); font-size: 0.88rem; font-style: italic; }
+  .badge-auto {
+    display: inline-block; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.02em;
+    color: var(--text-secondary); background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: 999px; padding: 1px 8px; margin-left: 6px; vertical-align: middle;
+  }
   footer {
     max-width: 860px; margin: 40px auto 0; padding: 16px 20px;
     color: var(--text-secondary); font-size: 0.8rem; border-top: 1px solid var(--border);
@@ -78,16 +94,57 @@
   </section>
 
   <section>
-    <h2>Línea de tiempo — eventos verificados</h2>
-    <div class="note">Solo hechos confirmados con fuente primaria, sin especulación.</div>
+    <h2>Monedas BRICS vs USD</h2>
+    <div class="note">Real, rupia, yuan y rand indexados a 100 — sube = la moneda se fortalece frente al dólar. Rusia queda fuera: el dato del rublo en Yahoo Finance es poco confiable desde las sanciones de 2022.</div>
+    <div class="card"><img src="img/chart_currencies.png" alt="Monedas BRICS vs USD indexado"></div>
+  </section>
+
+  <section>
+    <h2>Últimas noticias BRICS <span class="badge-auto">AUTOMÁTICO — SIN VERIFICAR</span></h2>
+    <div class="note">Búsqueda automática de Google News, actualizada en cada corrida. Son titulares, no hechos confirmados uno por uno — para eso está la sección de abajo.</div>
+    <ul class="news-list" id="news-list">
+      <li class="news-empty">Cargando…</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Hechos verificados</h2>
+    <div class="note">Solo lo confirmado a mano con fuente primaria, sin especulación — el estándar más alto de esta página.</div>
     <ul class="timeline">
       <li><span class="date">12 sep 2026</span>18ª Cumbre BRICS (Nueva Delhi): lanzamiento operativo de BRICS Pay, conectando CIPS/UPI/Pix/SPFS. Trump amenaza con aranceles del 100% a países que avancen en alternativas al dólar.</li>
-      <li><span class="date">— pendiente</span>Próximos eventos se agregan aquí a medida que se verifican.</li>
+      <li><span class="date">12 sep 2026</span>Ministerio de Comercio de India declara oficialmente que no hay propuesta de una moneda BRICS común por el momento.</li>
+      <li><span class="date">— pendiente</span>Próximos hechos se agregan aquí a medida que se verifican con fuente primaria.</li>
     </ul>
   </section>
 </main>
 <footer>
-  Datos: Yahoo Finance (BTC-USD, GC=F, DX-Y.NYB). Contenido editorial, no es asesoría financiera.
+  Datos de mercado: Yahoo Finance (BTC-USD, GC=F, DX-Y.NYB, BRL/INR/CNY/ZAR). Noticias: Google News (automático, sin verificar). Contenido editorial, no es asesoría financiera.
 </footer>
+<script>
+(function () {
+  const list = document.getElementById('news-list');
+  fetch('data/news.json', { cache: 'no-store' })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      const items = (data && data.items) || [];
+      if (!items.length) {
+        list.innerHTML = '<li class="news-empty">Sin noticias disponibles en esta corrida.</li>';
+        return;
+      }
+      list.innerHTML = items.map(function (item) {
+        const date = item.published
+          ? new Date(item.published).toLocaleDateString('es', { day: 'numeric', month: 'short', year: 'numeric' })
+          : '';
+        const meta = [date, item.source].filter(Boolean).join(' · ');
+        const safeTitle = (item.title || '').replace(/</g, '&lt;');
+        return '<li><a href="' + item.link + '" target="_blank" rel="noopener">' + safeTitle + '</a>'
+          + (meta ? '<span class="meta">' + meta + '</span>' : '') + '</li>';
+      }).join('');
+    })
+    .catch(function () {
+      list.innerHTML = '<li class="news-empty">No se pudo cargar el feed de noticias.</li>';
+    });
+})();
+</script>
 </body>
 </html>
