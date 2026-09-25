@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://radar.criptomix.com/sitemap.xml
